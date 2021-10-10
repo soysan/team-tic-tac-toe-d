@@ -2,11 +2,7 @@ const config = {
   initialPage: document.getElementById("initial-page"),
   target: document.getElementById("target"),
   secondPage: document.getElementById("second-page"),
-  startBtn: document.querySelector("#game-start"),
-  inputNum: document.querySelector("#inputted-number"),
-  winAndLose: document.getElementById("winAndLose"),
-  playerName: document.querySelector("#player-name"),
-  flag: true
+  flag: true,
 };
 
 // initial Pageの中身を生成する関数
@@ -37,7 +33,7 @@ const generateInitialPageContents = () => {
       />
       </div>
       <div class="d-flex justify-content-center">
-      <button type="button" class="btn btn-light btn-outline-dark" id="game-start">
+      <button type="button" id="game-start" class="btn btn-light btn-outline-dark">
       Game Start
       </button>
       </div>
@@ -45,26 +41,24 @@ const generateInitialPageContents = () => {
       `;
   config.initialPage.append(container);
 };
-generateInitialPageContents();
-console.log("btn", config.startBtn);
 
 const fire = () => {
-  const btn = config.startBtn;
+  const btn = document.querySelector('#game-start');
   btn.addEventListener("click", () => {
-    const playerName = config.playerName.value;
+    const playerName = document.getElementById('player-name').value;
     if (playerName === "") {
       alert("Please input both!");
     } else {
       config.initialPage.classList.add("display-none");
-      config.target.classList.remove("backgound-image");
+      config.target.classList.remove("background-image");
       config.secondPage.classList.remove("display-none");
-      let state = setAry(config.inputNum);
+      const inputNum = document.getElementById('inputted-number').value;
+      let state = setAry(inputNum);
       console.log("state:", state);
-      setBoxes(config.inputNum.value);
+      setBoxes(inputNum);
     }
   });
 };
-fire();
 
 const strToDom = (str) => {
   const temp = document.createElement("div");
@@ -98,9 +92,7 @@ const setBoxes = (inputNum) => {
     row_container.classList.add("row", "row-2");
     for (let j = 0; j < inputNum; j++) {
       let box = strToDom(`<div class="square col-md-4 col-3"></div>`);
-      let inner_box = strToDom(
-        `<div class="border square-in" id="${i}-${j}"></div>`
-      );
+      let inner_box = strToDom(`<div class="border square-in" id="${i}-${j}"></div>`);
       inner_box.addEventListener("click", () => {
         if (config.flag) {
           inner_box.innerHTML = "○";
@@ -176,7 +168,7 @@ const winLose = (bool) => {
 const data = [
   [0, 1, 2],
   [1, 0, 2],
-  [0, 1, 2]
+  [0, 1, 2],
 ];
 
 const drawSymbol = (data) => {
@@ -224,3 +216,6 @@ const logOutput = (number) => {
 //             </div>`;
 //   return box;
 // }
+
+generateInitialPageContents();
+fire();
