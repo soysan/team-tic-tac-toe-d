@@ -1,0 +1,49 @@
+.vh-100 {
+  height: 100vh;
+}
+
+.backgound-image {
+  /* The image used */
+  background-image: url("img/sea-otter.png");
+  /* Full height */
+  height: 100%;
+  /* Center and scale the image nicely */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.bg-gray {
+  background-color: red;
+}
+
+.display-none {
+  display: none;
+}
+
+.parent {
+  position: relative;
+}
+
+.child {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+}
+
+.text-shadow {
+  text-shadow: #000 0px 0px 1px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.border {
+  border: solid;
+  border-color: white;
+}
+
+.log-square {
+  width: 100%;
+  height: 5rem;
+  font-size: 3rem;
+}
