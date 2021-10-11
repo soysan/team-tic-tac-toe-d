@@ -5,6 +5,7 @@ const config = {
   flag: true,
 };
 
+
 // initial Pageの中身を生成する関数
 const generateInitialPageContents = () => {
   let container = document.createElement("div");
@@ -56,6 +57,9 @@ const fire = () => {
       let state = setAry(inputNum);
       console.log("state:", state);
       setBoxes(inputNum);
+      //------------------------
+      drawSecondPage();
+      //^^^^^^^^^^^^^^^^^^^^^^
     }
   });
 };
@@ -219,3 +223,30 @@ const logOutput = (number) => {
 
 generateInitialPageContents();
 fire();
+
+//ゲーム画面
+
+const drawSecondPage = () => {
+  let div = document.createElement("div");
+  div.classList.add("pb-5");
+
+  let title = `
+    <div class="py-4">
+      <h1 class="d-flex justify-content-center py-3">Tic-tac-toe</h1>
+ 
+      <div class="d-flex justify-content-around player">
+          <button type="button" class="btn btn-warning rounded-pill" disabled>
+            Player1
+          </button>
+          <button type="button" class="btn btn-light rounded-pill" disabled>
+            Player2/AI?
+          </button>
+      </div>
+    </div>
+  `;
+
+  div.innerHTML = title;
+  config.secondPage.append(div);
+  console.log(div);
+}
+
