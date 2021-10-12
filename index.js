@@ -67,10 +67,71 @@ const strToDom = (str) => {
 };
 
 //二次元配列を受け取ってbool(勝敗着いたならtrue)を返す
-// const checkWin = () =>{
-//   console.log("hogehoge");
-//   return false;
-// }
+//trueを返す場合、どっちが勝ったかはconfig.flagの値と合わせて判定する。
+const checkWin = ( state ) =>{
+  if(horiozntalWin( state )){
+    return true;
+  }else if(verticalWin( state )){
+    return true;
+  }else if(crossWin( state )){
+    return true;
+  }
+  return false;
+}
+
+const horizontalWin = (state) => {
+  for(i=0; i++; i<state.length){
+    if(isSameAry(state[i]) && state[i][0]!=0){
+      return true;
+    }
+    continue;
+  }
+};
+
+const isSameAry = (ary) => {
+  val = ary[0];
+  for(i=1; i<ary.length; i++){
+    if(ary[i] != val){
+      return false
+    }
+    continue;
+  }
+  return true;
+}
+
+const verticalWin = (state) => {
+  for(i=0; i++; i<state.length){
+    for(j=0; j++; j<state.length){
+      let verAry = [];
+      verAry.push(state[j][i])
+    }
+    verAry.every(function(val){
+      return val == state[j][0]
+    })
+  }
+  return false;
+};
+
+const crossWin = (state) => {
+  if( state[0][0] != 0 ){
+    key = state[0][0];
+    for(i=1; i++; i<state.length){
+      if( key != state[i][i]){
+        return false
+      }
+    }
+    return true;
+  }
+  if( state[state.length-1][state.length-1] != 0 ){
+    key = state[state.length-1][state.length-1];
+    for(i=1; i++; i<state.length){
+      if( key != state[state.length-i][state.lengh-i]){
+        return false
+      }
+    }
+    return true;
+  }
+};
 
 const setAry = (num) => {
   let innerAry = [];
