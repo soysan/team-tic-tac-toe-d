@@ -80,28 +80,17 @@ const checkWin = ( state ) =>{
 }
 
 const horizontalWin = (state) => {
-  for(i=0; i++; i<state.length){
-    if(isSameAry(state[i]) && state[i][0]!=0){
-      return true;
-    }
+  for(let i=0; i<state.length; i++){
+    state[i].every(function(val){
+      return val == state[i][0];
+    });
     continue;
   }
 };
 
-const isSameAry = (ary) => {
-  val = ary[0];
-  for(i=1; i<ary.length; i++){
-    if(ary[i] != val){
-      return false
-    }
-    continue;
-  }
-  return true;
-}
-
 const verticalWin = (state) => {
-  for(i=0; i++; i<state.length){
-    for(j=0; j++; j<state.length){
+  for(let i=0; i<state.length; i++){
+    for(j=0; j<state.length; j++ ){
       let verAry = [];
       verAry.push(state[j][i])
     }
@@ -115,7 +104,7 @@ const verticalWin = (state) => {
 const crossWin = (state) => {
   if( state[0][0] != 0 ){
     key = state[0][0];
-    for(i=1; i++; i<state.length){
+    for(let i=1; i<state.length; i++){
       if( key != state[i][i]){
         return false
       }
@@ -124,7 +113,7 @@ const crossWin = (state) => {
   }
   if( state[state.length-1][state.length-1] != 0 ){
     key = state[state.length-1][state.length-1];
-    for(i=1; i++; i<state.length){
+    for(let i=1; i<state.length; i++){
       if( key != state[state.length-i][state.lengh-i]){
         return false
       }
