@@ -163,12 +163,10 @@ const setBoxes = (inputNum) => {
         if (config.flag) {
           inner_box.innerHTML = "○";
           state[i][j] = 1;
-          console.log("state", state);
           config.flag = false;
         } else {
           inner_box.innerHTML = "×";
           state[i][j] = 2;
-          console.log("state", state);
           config.flag = true;
 
           if(checkWin(j, i)){
