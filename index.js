@@ -71,9 +71,9 @@ const strToDom = (str) => {
 //クリックしたマスの位置を渡してbool(勝敗着いたならtrue)を返す
 //trueを返す場合、どっちが勝ったかはconfig.flagの値と合わせて判定する。
 const checkWin = ( h, v ) =>{
-  if(horizontalWin( v )){
+  if(horizontalWin( h )){
     return true;
-  }else if(verticalWin( h )){
+  }else if(verticalWin( v )){
     return true;
   }else if(crossWin( h, v )){
     return true;
@@ -81,18 +81,18 @@ const checkWin = ( h, v ) =>{
   return false;
 }
 
-const horizontalWin = ( v ) => {
-  for(let i=0;i+1 <state.length;i++){
-    if( state[v][i] !== state[v][i+1]){
+const horizontalWin = ( h ) => {
+  for(let i=0;i<state.length-1;i++){
+    if( state[h][i] !== state[h][i+1]){
       return false;
     }
   }
   return true;
 };
 
-const verticalWin = ( h ) => {
-  for(let i=0; i+1<state.length; i++){
-    if( state[i][h] !== state[i+1][h]){
+const verticalWin = (v) => {
+  for(let i=0; i<state.length-1; i++){
+    if( state[i][v] !== state[i+1][v]){
       return false;
     }
   }
@@ -101,31 +101,40 @@ const verticalWin = ( h ) => {
 
 const crossWin = ( h, v ) => {
   if( h === v){
-    let a = h%state.length
-    let b = v%state.length
-    for(let i=0;i<state.length;i ++){
-      if(state[v][h] !== state[b][a]){
-        return false
-      }
-      a = (a+1)%state.length;
-      b = (b+1)%state.length;
+    if(crossWinHelper(h, v, increment)){
+      return true;
     }
-    return true;
   }
   if( h + v === state.length-1){
-    let a = h%state.length
-    let b = v%state.length
-    for(let i=0;i<state.length;i ++){
-      if(state[v][h] !== state[b][a]){
-        return false
-      }
-      a = (a+1)%state.length;
-      b = (b-1)%state.length;
+    if(crossWinHelper(h, v, decrement)){
+      return true;
     }
-    return true;
   }
   return false;
 };
+
+const crossWinHelper = (h, v, fnc ) => {
+  let a = increment(h)
+  let b = fnc(v)
+  for(let i=0;i<state.length;i ++){
+    if(state[h][v] !== state[a][b]){
+      return false
+    }
+    a = increment(a)
+    b = fnc(b)
+  }
+  return true
+}
+
+const increment = i => (i+1)%state.length;
+
+const decrement = i => {
+if( (i-1)%state.length >= 0){
+  return (i-1)%state.length;
+}
+  return state.length-1
+} 
+
 
 const setAry = (num) => {
   let innerAry = [];
