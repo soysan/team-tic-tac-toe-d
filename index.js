@@ -54,8 +54,6 @@ const fire = () => {
       config.target.classList.remove("background-image");
       config.secondPage.classList.remove("display-none");
       const inputNum = document.getElementById('inputted-number').value;
-      let state = setAry(inputNum);
-      console.log("state:", state);
       setBoxes(inputNum);
       //------------------------
       drawSecondPage();
@@ -70,11 +68,64 @@ const strToDom = (str) => {
   return temp.firstElementChild;
 };
 
-//二次元配列を受け取ってbool(勝敗着いたならtrue)を返す
-// const checkWin = () =>{
-//   console.log("hogehoge");
-//   return false;
-// }
+//クリックしたマスの位置を渡してbool(勝敗着いたならtrue)を返す
+//trueを返す場合、どっちが勝ったかはconfig.flagの値と合わせて判定する。
+const checkWin = ( h, v ) =>{
+  if(horizontalWin( v )){
+    return true;
+  }else if(verticalWin( h )){
+    return true;
+  }else if(crossWin( h, v )){
+    return true;
+  }
+  return false;
+}
+
+const horizontalWin = ( v ) => {
+  for(let i=0;i+1 <state.length;i++){
+    if( state[v][i] !== state[v][i+1]){
+      return false;
+    }
+  }
+  return true;
+};
+
+const verticalWin = ( h ) => {
+  for(let i=0; i+1<state.length; i++){
+    if( state[i][h] !== state[i+1][h]){
+      return false;
+    }
+  }
+  return true;
+};
+
+const crossWin = ( h, v ) => {
+  if( h === v){
+    let a = h%state.length
+    let b = v%state.length
+    for(let i=0;i<state.length;i ++){
+      if(state[v][h] !== state[b][a]){
+        return false
+      }
+      a = (a+1)%state.length;
+      b = (b+1)%state.length;
+    }
+    return true;
+  }
+  if( h + v === state.length-1){
+    let a = h%state.length
+    let b = v%state.length
+    for(let i=0;i<state.length;i ++){
+      if(state[v][h] !== state[b][a]){
+        return false
+      }
+      a = (a+1)%state.length;
+      b = (b-1)%state.length;
+    }
+    return true;
+  }
+  return false;
+};
 
 const setAry = (num) => {
   let innerAry = [];
@@ -89,6 +140,7 @@ const setAry = (num) => {
 };
 
 const setBoxes = (inputNum) => {
+  let state = setAry(inputNum);
   let boxes_container = document.createElement("div");
   boxes_container.classList.add("mainTable", "col-6", "bg-light", "my-3");
   for (let i = 0; i < inputNum; i++) {
@@ -107,29 +159,18 @@ const setBoxes = (inputNum) => {
           // state[i][j] = 2;
           config.flag = true;
 
-          // if(checkWin){
-          //   logWrite;
-          // }
+          if(checkWin(j, i)){
+            console.log("勝敗が決まりました。")
+          }
         }
       });
       box.appendChild(inner_box);
-      console.log("hogeeee");
       row_container.appendChild(box);
     }
     boxes_container.appendChild(row_container);
   }
   config.target.appendChild(boxes_container);
 };
-
-// const checkWin = (state) => {
-//   for (let i = 0; state.length; i++) {}
-// };
-
-// const horizontWin = (state) => {};
-
-// const verticalWin = (state) => {};
-
-// const crosWin = (state) => {};
 
 //atsuro担当　　後で
 const judge = (bool) => {
