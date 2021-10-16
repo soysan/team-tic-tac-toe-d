@@ -10,6 +10,7 @@ class Model {
   constructor(name, inputNum) {
     this.name = name;
     this.state = this.setAry(inputNum);
+    this.clickCnt = 0;
   }
 
   setAry = (num) => {
@@ -170,7 +171,25 @@ class View {
             View.winLose();
             View.logOutput();
             //stateをリセット
+          }else{
+            model.clickCnt ++
+            if(model.clickCnt === inputNum*inputNum){
+              //draw処理
+
+
+            }
           }
+
+        //--------draw処理を記述-------
+
+        const isDraw = () {
+
+        }
+
+        //-----------------------
+
+
+
         });
         boxes_container.appendChild(box);
       }
@@ -230,7 +249,7 @@ class View {
     config.secondPage.append(div);
   };
 
-  static winLose = (bool) => {
+  static winLose = () => {
     let result = "<div>";
     result += `
       <h4 class="text-center">勝敗</h4>
@@ -247,7 +266,7 @@ class View {
     const player2 = `
       <div>
           <p>Player2</p>
-          <p>${Controller.judge(config.flag)}</p>
+          <p>${Controller.judge(!config.flag)}</p>
       </div>
     `;
 
@@ -294,6 +313,8 @@ class Controller {
     }
   };
 
+
+  //----------消す？---
   static judge = (flag) => {
     if (flag) {
       return "win";
@@ -302,6 +323,8 @@ class Controller {
     }
   };
 }
+  // ---------------
+
 class Log {
   static array = [];
 }
