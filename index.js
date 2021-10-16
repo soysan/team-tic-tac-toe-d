@@ -143,7 +143,8 @@ const setAry = (num) => {
   }
   let ary = [];
   for (let i = 0; i < num; i++) {
-    ary.push(innerAry);
+    cp = innerAry.slice()
+    ary.push(cp);
   }
   return ary;
 };
@@ -161,11 +162,13 @@ const setBoxes = (inputNum) => {
       inner_box.addEventListener("click", () => {
         if (config.flag) {
           inner_box.innerHTML = "○";
-          // state[i][j] = 1;
+          state[i][j] = 1;
+          console.log("state", state);
           config.flag = false;
         } else {
           inner_box.innerHTML = "×";
-          // state[i][j] = 2;
+          state[i][j] = 2;
+          console.log("state", state);
           config.flag = true;
 
           if(checkWin(j, i)){
