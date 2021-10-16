@@ -156,12 +156,10 @@ class View {
           if (config.flag) {
             box.innerHTML = "○";
             model.state[i][j] = 1;
-            // console.log("state", model.state);
             config.flag = false;
           } else {
             box.innerHTML = "×";
             model.state[i][j] = 2;
-            // console.log("state", model.state);
             config.flag = true;
           }
           if (model.checkWin(i, j)) {
@@ -182,15 +180,12 @@ class View {
 
         //--------draw処理を記述-------
 
-        const isDraw = () {
+        // const isDraw = () {
 
-        }
+        // }
 
         //-----------------------
-
-
-
-        });
+        },{ once: true });
         boxes_container.appendChild(box);
       }
     }
