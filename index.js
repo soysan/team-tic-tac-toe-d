@@ -2,7 +2,7 @@ const config = {
   initialPage: document.getElementById("initial-page"),
   target: document.getElementById("target"),
   secondPage: document.getElementById("second-page"),
-  flag: true
+  flag: true,
 };
 //globalで持つ変数
 
@@ -141,16 +141,10 @@ class View {
 
   static setBoxes = (inputNum, model) => {
     let container = this.strToDom(`<div class="background"></div>`);
-    let boxes_container = this.strToDom(
-      `<div class="game-grid" style="grid-template-columns: repeat(${inputNum}, 1fr);grid-template-rows:repeat(${inputNum}, 1fr);max-width:${
-        10 * inputNum + (inputNum - 1) * 0.9
-      }rem"></div>`
-    );
+    let boxes_container = this.strToDom(`<div class="game-grid" style="grid-template-columns: repeat(${inputNum}, 1fr);grid-template-rows:repeat(${inputNum}, 1fr);max-width:${10 * inputNum + (inputNum - 1) * 0.9}rem"></div>`);
     for (let i = 0; i < inputNum; i++) {
       for (let j = 0; j < inputNum; j++) {
-        let box = this.strToDom(
-          `<div class="game-cell " id="${i}-${j}"></div>`
-        );
+        let box = this.strToDom(`<div class="game-cell " id="${i}-${j}"></div>`);
         box.addEventListener("click", () => {
           if (config.flag) {
             box.innerHTML = "○";
@@ -182,6 +176,68 @@ class View {
   static drawSecondPage = () => {
     let div = document.createElement("div");
     div.classList.add("pb-5");
+    strToDom = (str) => {
+      const temp = document.createElement("div");
+      temp.innerHTML = str;
+      return temp.firstElementChild;
+    };
+
+    let title = `
+    <div class="py-4">
+      <h1 class="d-flex justify-content-center py-3">Tic-tac-toe</h1>
+
+      <div class="d-flex justify-content-around player">
+          <button type="button" class="btn btn-warning rounded-pill" disabled>
+            Player1
+          </button>
+          <button type="button" class="btn btn-light rounded-pill" disabled>
+            Player2/AI?
+          </button>
+      </div>
+    </div>
+  `;
+
+    setBoxes = (inputNum) => {
+      let state = setAry(inputNum);
+      let boxes_container = document.createElement("div");
+      boxes_container.classList.add("mainTable", "col-6", "bg-light", "my-3");
+      for (let i = 0; i < inputNum; i++) {
+        let row_container = document.createElement("div");
+        row_container.classList.add("row", "row-2");
+        for (let j = 0; j < inputNum; j++) {
+          let box = strToDom(`<div class="square col-md-4 col-3"></div>`);
+          let inner_box = strToDom(`<div class="border square-in" id="${i}-${j}"></div>`);
+          inner_box.addEventListener("click", () => {
+            if (config.flag) {
+              inner_box.innerHTML = "○";
+              state[i][j] = 1;
+              console.log("state", state);
+              config.flag = false;
+            } else {
+              inner_box.innerHTML = "×";
+              state[i][j] = 2;
+              console.log("state", state);
+              config.flag = true;
+
+              if (checkWin(j, i)) {
+                console.log("勝敗が決まりました。");
+              }
+            }
+          });
+          box.appendChild(inner_box);
+          row_container.appendChild(box);
+        }
+        boxes_container.appendChild(row_container);
+      }
+      config.target.appendChild(boxes_container);
+    };
+
+    div.innerHTML = title;
+    config.secondPage.append(div);
+  };
+  drawSecondPage = () => {
+    let div = document.createElement("div");
+    div.classList.add("pb-5");
 
     let title = `
     <div class="py-4">
@@ -200,12 +256,34 @@ class View {
 
     div.innerHTML = title;
     config.secondPage.append(div);
+    console.log(div);
   };
+}
 
+class Controller {
   static logOutput = () => {
     let div = document.createElement("div");
     div.classList.add("bg-light", "my-2");
     const currState = Log.array[Log.array.length - 1];
+    fire = () => {
+      const btn = document.querySelector("#game-start");
+      btn.addEventListener("click", () => {
+        const playerName = document.getElementById("player-name").value;
+        if (playerName === "") {
+          alert("Please input both!");
+        } else {
+          config.initialPage.classList.add("display-none");
+          config.target.classList.remove("background-image");
+          config.secondPage.classList.remove("display-none");
+          const inputNum = document.getElementById("inputted-number").value;
+          setBoxes(inputNum);
+          //------------------------
+          drawSecondPage();
+          //^^^^^^^^^^^^^^^^^^^^^^
+          const model = new Model(playerName, inputNum);
+        }
+      });
+    };
 
     for (let i = 0; i < currState.length; i++) {
       let square = document.createElement("div");
@@ -215,20 +293,16 @@ class View {
         // square_inner += renderBox(i, j);
         square_inner += `
                 <div class="square col-md-4 col-3">
-                    <div class="border log-square text-center" id="${
-                      i + "-" + j
-                    }">
+                    <div class="border log-square text-center" id="${i + "-" + j}">
                       ${Controller.drawSymbol(currState[i][j])}
                     </div>
                 </div>`;
         Log.array.push(currState[i]);
       }
-
       console.log(Log.array);
       square.innerHTML = square_inner;
       div.append(square);
     }
-
     config.secondPage.append(div);
   };
 
