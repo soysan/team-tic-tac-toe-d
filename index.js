@@ -164,6 +164,8 @@ class View {
         model.inputNum
       }, 1fr);grid-template-rows:repeat(${model.inputNum}, 1fr);max-width:${
         10 * model.inputNum + (model.inputNum - 1) * 0.9
+      }rem;max-height:${
+        10 * model.inputNum + (model.inputNum - 1) * 0.9
       }rem"></div>`
     );
     return boxes_container;
