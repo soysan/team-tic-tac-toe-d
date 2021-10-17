@@ -174,16 +174,18 @@ class View {
       for (let j = 0; j < model.inputNum; j++) {
         let box = this.strToDom(
           `<div class="game-cell " id="${i}-${j}"></div>`
-        );
+        );                
         box.addEventListener(
           "click",
           () => {
             if (config.flag) {
+              View.toggleBtnColor();
               box.innerHTML = "○";
               box.classList.add("red");
               model.state[i][j] = 1;
               config.flag = false;
             } else {
+              View.toggleBtnColor();
               box.innerHTML = "×";
               model.state[i][j] = 2;
               config.flag = true;
@@ -192,14 +194,13 @@ class View {
               //ログ書き出し
               if(config.flag){
               alert("×の勝ちです。")
+              Controller.queArray(Log.array_2, 0);
               }else{
               alert("○の勝ちです。");
+              Controller.queArray(Log.array_2, 1);
               }
               // Log.array.push(model.state);
               Controller.queArray(Log.array, model.state);
-              Controller.queArray(Log.array_2, config.flag);
-              console.log("Log.array:", Log.array);
-              console.log("length", Log.array.length);
               View.winLoseLog(model);
               //stateをリセット
               Controller.resetGame(model);
@@ -209,10 +210,8 @@ class View {
                 //draw処理
                 alert("引き分けです。");
                 // Log.array.push(model.state);
-                Controller.queLogArray(Log.array, model.state);
-                Controller.queArray(Log.array_2, config.flag);
-                console.log("Log.array:", Log.array);
-                console.log("length", Log.array.length);
+                Controller.queArray(Log.array, model.state);
+                Controller.queArray(Log.array_2, 2);
                 View.winLoseLog(model);
                 Controller.resetGame(model);
               }
@@ -226,6 +225,22 @@ class View {
     return boxes_container;
   };
 
+  static toggleBtnColor = () => {
+    let btn_1 = document.getElementById("button_1")
+    let btn_2 = document.getElementById("button_2")
+    if(config.flag){
+    btn_1.classList.remove("btn-warning")
+    btn_1.classList.add("btn-light")
+    btn_2.classList.remove("btn-light")
+    btn_2.classList.add("btn-warning")
+    }else{
+    btn_2.classList.remove("btn-warning")
+    btn_2.classList.add("btn-light")
+    btn_1.classList.remove("btn-light")
+    btn_1.classList.add("btn-warning")
+    }
+  }
+
   static drawSecondPage = () => {
     let div = document.createElement("div");
     div.classList.add("pb-5");
@@ -235,10 +250,10 @@ class View {
       <h1 class="d-flex justify-content-center py-3">Tic-tac-toe</h1>
 
       <div class="d-flex justify-content-around player">
-          <button type="button" class="btn btn-warning rounded-pill" disabled>
+          <button type="button" id="button_1" class="btn btn-warning rounded-pill" disabled>
             ${config.name}
           </button>
-          <button type="button" class="btn btn-light rounded-pill" disabled>
+          <button type="button" id="button_2" class="btn btn-light rounded-pill" disabled>
             Player2
           </button>
       </div>
@@ -249,8 +264,10 @@ class View {
     config.secondPage.append(div);
   };
 
-  static logOutput = (currState) => {
+  static logOutput = (currState, model, result ) => {
     let div = document.createElement("div");
+    let container = View.winLose(model, result)
+    div.appendChild(container);
     div.classList.add("bg-light", "my-5", "log");
     for (let i = 0; i < currState.length; i++) {
       let square = document.createElement("div");
@@ -274,39 +291,22 @@ class View {
     document.querySelector("#resultLog").append(div);
   };
 
-  static winLose = (model, flag) => {
-    const parent = document.querySelector("#resultWinLose");
-    let container = document.createElement("div");
+  static winLose = (model, result) => {
+    let container = document.createElement("p");
     container.classList.add("d-flex", "justify-content-around");
-
-    if (model.clickCnt === 0) {
-      const drawGame = `
-        <div>
-          <p>draw</p>
-        </div>
-      `;
-      container.innerHTML = drawGame;
+    if (result === 2) {
+      container.innerHTML="Draw"
     } else {
-      const player1 = `
-        <div>
-            <p>${config.name}</p>
-            <p>${flag ? "Win":"Lose"}</p>
-        </div>
-      `;
-
-      container.innerHTML = player1;
+      container.innerHTML=`${config.name}の${result===1 ? "Win":"Lose"}`;
     }
-    parent.append(container);
+    return container;
   };
 
   static winLoseLog = (model) => {
     document.querySelector("#resultWinLose").innerHTML = "";
     document.querySelector("#resultLog").innerHTML="";
     for (let i = 0; i < Log.array.length; i++) {
-      console.log("aasfffff");
-      View.winLose(model, Log.array_2[i]);
-      console.log("aaaa");
-      View.logOutput(Log.array[i]);
+      View.logOutput(Log.array[i], model, Log.array_2[i]);
     }
   };
 }
@@ -339,6 +339,7 @@ class Controller {
     let boxes = document.getElementById("boxes");
     boxes.innerHTML = "";
     View.makeGameCells(newModel, boxes);
+    config.flag = true;
   };
 
   static drawSymbol = (data) => {
