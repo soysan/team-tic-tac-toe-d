@@ -155,9 +155,8 @@ class View {
     container.innerHTML = result;
 
     let boxes_container = View.makeGameGrid(model);
-    let gameCells = View.makeGameCells(model);
-    boxes_container.appendChild(gameCells);
-    container.appendChild(boxes_container);
+    let gameCells = View.makeGameCells(model, boxes_container);
+    container.appendChild(gameCells);
     config.target.appendChild(container);
   };
 
@@ -172,8 +171,7 @@ class View {
     return boxes_container;
   };
 
-  static makeGameCells = (model) => {
-    let boxes_container = document.createElement("div");
+  static makeGameCells = (model, boxes_container) => {
     for (let i = 0; i < model.inputNum; i++) {
       for (let j = 0; j < model.inputNum; j++) {
         let box = this.strToDom(
@@ -332,9 +330,8 @@ class Controller {
   static resetGame = (model) => {
     const newModel = new Model(model.playerName, model.inputNum);
     let boxes = document.getElementById("boxes");
-    let gamegrid = View.makeGameGrid(newModel);
     boxes.innerHTML = "";
-    boxes.appendChild(gamegrid);
+    View.makeGameCells(newModel, boxes);
   };
 
   static drawSymbol = (data) => {
