@@ -2,15 +2,17 @@ const config = {
   initialPage: document.getElementById("initial-page"),
   target: document.getElementById("target"),
   secondPage: document.getElementById("second-page"),
-  flag: true
+  flag: true,
+  name: "Sea_Otter"
 };
 //globalで持つ変数
 
 class Model {
   constructor(name, inputNum) {
     this.name = name;
+    this.inputNum = inputNum;
     this.state = this.setAry(inputNum);
-    this.clickCnt = 0;
+    this.clickCnt = inputNum * inputNum;
   }
 
   setAry = (num) => {
@@ -103,7 +105,7 @@ class View {
   Tic tac toe Game
   </div>
   <p class="text-center text-light text-shadow">
-  <strong>３以上の奇数</strong>を入力ください。その数が１列になります。
+  <strong>３以上の整数</strong>を入力してください。その数が１列になります。
   </p>
   <div>
   <div class="d-flex justify-content-center">
@@ -140,57 +142,81 @@ class View {
     return temp.firstElementChild;
   };
 
-  static setBoxes = (inputNum, model) => {
-    let container = this.strToDom(`<div class="background"></div>`);
+  static setBoxes = (model) => {
+    let container = this.strToDom(`<div class="background d-flex"></div>`);
+    let result = "<div class='col-3'>";
+    result += `
+      <h4 class="text-center">勝敗</h4>
+      <div id="resultWinLose"></div>
+      <div id="resultLog">
+      </div>
+    `;
+
+    container.innerHTML = result;
+
+    let boxes_container = View.makeGameGrid(model);
+    let gameCells = View.makeGameCells(model);
+    boxes_container.appendChild(gameCells);
+    container.appendChild(boxes_container);
+    config.target.appendChild(container);
+  };
+
+  static makeGameGrid = (model) => {
     let boxes_container = this.strToDom(
-      `<div class="game-grid" style="grid-template-columns: repeat(${inputNum}, 1fr);grid-template-rows:repeat(${inputNum}, 1fr);max-width:${
-        10 * inputNum + (inputNum - 1) * 0.9
+      `<div class="game-grid" id="boxes" style="grid-template-columns: repeat(${
+        model.inputNum
+      }, 1fr);grid-template-rows:repeat(${model.inputNum}, 1fr);max-width:${
+        10 * model.inputNum + (model.inputNum - 1) * 0.9
       }rem"></div>`
     );
-    for (let i = 0; i < inputNum; i++) {
-      for (let j = 0; j < inputNum; j++) {
+    return boxes_container;
+  };
+
+  static makeGameCells = (model) => {
+    let boxes_container = document.createElement("div");
+    for (let i = 0; i < model.inputNum; i++) {
+      for (let j = 0; j < model.inputNum; j++) {
         let box = this.strToDom(
           `<div class="game-cell " id="${i}-${j}"></div>`
         );
-        box.addEventListener("click", () => {
-          if (config.flag) {
-            box.innerHTML = "○";
-            model.state[i][j] = 1;
-            config.flag = false;
-          } else {
-            box.innerHTML = "×";
-            model.state[i][j] = 2;
-            config.flag = true;
-          }
-          if (model.checkWin(i, j)) {
-            console.log("勝敗が決まりました。");
-            //ログ書き出し
-            Log.array.push(model.state);
-            View.winLose();
-            View.logOutput();
-            //stateをリセット
-          }else{
-            model.clickCnt ++
-            if(model.clickCnt === inputNum*inputNum){
-              //draw処理
-
-
+        box.addEventListener(
+          "click",
+          () => {
+            if (config.flag) {
+              box.innerHTML = "○";
+              box.classList.add("red");
+              model.state[i][j] = 1;
+              config.flag = false;
+            } else {
+              box.innerHTML = "×";
+              model.state[i][j] = 2;
+              config.flag = true;
             }
-          }
-
-        //--------draw処理を記述-------
-
-        // const isDraw = () {
-
-        // }
-
-        //-----------------------
-        },{ once: true });
+            if (model.checkWin(i, j)) {
+              console.log("勝敗が決まりました。");
+              //ログ書き出し
+              Log.array.push(model.state);
+              View.winLoseLog(model.state, model.clickCnt);
+              //stateをリセット
+              Controller.resetGame(model);
+            } else {
+              model.clickCnt--;
+              if (model.clickCnt === 0) {
+                //draw処理
+                alert("どろー");
+                Log.array.push(model.state);
+                View.winLoseLog(model.state, model.clickCnt);
+                Controller.resetGame(model);
+              }
+            }
+          },
+          { once: true }
+        );
+        console.log("hoge");
         boxes_container.appendChild(box);
       }
     }
-    container.appendChild(boxes_container);
-    config.target.appendChild(container);
+    return boxes_container;
   };
 
   static drawSecondPage = () => {
@@ -218,7 +244,7 @@ class View {
 
   static logOutput = () => {
     let div = document.createElement("div");
-    div.classList.add("bg-light", "my-2");
+    div.classList.add("bg-light", "my-5", "log");
     const currState = Log.array[Log.array.length - 1];
 
     for (let i = 0; i < currState.length; i++) {
@@ -241,37 +267,42 @@ class View {
       div.append(square);
     }
 
-    config.secondPage.append(div);
+    document.querySelector("#resultLog").append(div);
   };
 
-  static winLose = () => {
-    let result = "<div>";
-    result += `
-      <h4 class="text-center">勝敗</h4>
-      <div class="d-flex justify-content-around">
-    `;
+  static winLose = (modelCnt) => {
+    const parent = document.querySelector("#resultWinLose");
 
-    const player1 = `
-      <div>
-          <p>Player1</p>
-          <p>${Controller.judge(config.flag)}</p>
-      </div>
-    `;
+    console.log("parent", parent);
 
-    const player2 = `
-      <div>
-          <p>Player2</p>
-          <p>${Controller.judge(!config.flag)}</p>
-      </div>
-    `;
+    let container = document.createElement("div");
+    container.classList.add("d-flex", "justify-content-around");
 
-    result += `
-              ${player1}
-              ${player2}
-          </div>
-      </div>
-    `;
-    config.secondPage.innerHTML = result;
+    if (modelCnt === 0) {
+      const drawGame = `
+        <div>
+          <p>draw</p>
+        </div>
+      `;
+      container.innerHTML = drawGame;
+    } else {
+      const player1 = `
+        <div>
+            <p>Player1</p>
+            <p>${Controller.judge(!config.flag)}</p>
+        </div>
+      `;
+
+      container.innerHTML = player1;
+    }
+    parent.append(container);
+  };
+
+  static winLoseLog = (modelState, modelCnt) => {
+    for (let i = 0; i < Controller.logArray(modelState).length; i++) {
+      View.winLose(modelCnt);
+      View.logOutput();
+    }
   };
 }
 
@@ -282,17 +313,28 @@ class Controller {
 
   static fire = () => {
     const playerName = document.getElementById("player-name").value;
+    const inputNum = document.getElementById("inputted-number").value;
     if (playerName === "") {
-      alert("Please input both!");
+      return alert("名前を入力してください!");
+    } else if (!(inputNum >= 3)) {
+      return alert("3以上の整数を入力してください!");
     } else {
       config.initialPage.classList.add("display-none");
       config.target.classList.remove("background-image");
       config.secondPage.classList.remove("display-none");
-      const inputNum = document.getElementById("inputted-number").value;
+      config.name = playerName;
       const model = new Model(playerName, inputNum);
-      View.setBoxes(inputNum, model);
+      View.setBoxes(model);
       View.drawSecondPage();
     }
+  };
+
+  static resetGame = (model) => {
+    const newModel = new Model(model.playerName, model.inputNum);
+    let boxes = document.getElementById("boxes");
+    let gamegrid = View.makeGameGrid(newModel);
+    boxes.innerHTML = "";
+    boxes.appendChild(gamegrid);
   };
 
   static drawSymbol = (data) => {
@@ -308,8 +350,17 @@ class Controller {
     }
   };
 
+  static logArray = (data) => {
+    if (Log.array.length > 3) {
+      Log.array.splice(0);
+      Log.array.push(data);
+      return Log.array;
+    } else {
+      Log.array.push(data);
+      return Log.array;
+    }
+  };
 
-  //----------消す？---
   static judge = (flag) => {
     if (flag) {
       return "win";
@@ -318,7 +369,6 @@ class Controller {
     }
   };
 }
-  // ---------------
 
 class Log {
   static array = [];
