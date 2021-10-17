@@ -91,7 +91,9 @@ body {
 }
 
 #resultLog {
+  height: 30rem;
   margin: 0 auto;
+  overflow-y: scroll;
 }
 
 .log {
