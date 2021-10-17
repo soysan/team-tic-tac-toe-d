@@ -28,8 +28,6 @@ class Model {
     return ary;
   };
 
-  //クリックしたマスの位置を渡してbool(勝敗着いたならtrue)を返す
-  //trueを返す場合、どっちが勝ったかはconfig.flagの値と合わせて判定する。
   checkWin = (h, v) => {
     if (this.horizontalWin(h)) {
       return true;
@@ -191,26 +189,37 @@ class View {
               config.flag = true;
             }
             if (model.checkWin(i, j)) {
-              console.log("勝敗が決まりました。");
               //ログ書き出し
-              Log.array.push(model.state);
-              View.winLoseLog(model.state, model.clickCnt);
+              if(config.flag){
+              alert("×の勝ちです。")
+              }else{
+              alert("○の勝ちです。");
+              }
+              // Log.array.push(model.state);
+              Controller.queArray(Log.array, model.state);
+              Controller.queArray(Log.array_2, config.flag);
+              console.log("Log.array:", Log.array);
+              console.log("length", Log.array.length);
+              View.winLoseLog(model);
               //stateをリセット
               Controller.resetGame(model);
             } else {
               model.clickCnt--;
               if (model.clickCnt === 0) {
                 //draw処理
-                alert("どろー");
-                Log.array.push(model.state);
-                View.winLoseLog(model.state, model.clickCnt);
+                alert("引き分けです。");
+                // Log.array.push(model.state);
+                Controller.queLogArray(Log.array, model.state);
+                Controller.queArray(Log.array_2, config.flag);
+                console.log("Log.array:", Log.array);
+                console.log("length", Log.array.length);
+                View.winLoseLog(model);
                 Controller.resetGame(model);
               }
             }
           },
           { once: true }
         );
-        console.log("hoge");
         boxes_container.appendChild(box);
       }
     }
@@ -227,10 +236,10 @@ class View {
 
       <div class="d-flex justify-content-around player">
           <button type="button" class="btn btn-warning rounded-pill" disabled>
-            Player1
+            ${config.name}
           </button>
           <button type="button" class="btn btn-light rounded-pill" disabled>
-            Player2/AI?
+            Player2
           </button>
       </div>
     </div>
@@ -240,11 +249,9 @@ class View {
     config.secondPage.append(div);
   };
 
-  static logOutput = () => {
+  static logOutput = (currState) => {
     let div = document.createElement("div");
     div.classList.add("bg-light", "my-5", "log");
-    const currState = Log.array[Log.array.length - 1];
-
     for (let i = 0; i < currState.length; i++) {
       let square = document.createElement("div");
       square.classList.add("d-flex", "judtify-content-center", "row-2");
@@ -258,7 +265,6 @@ class View {
                       ${Controller.drawSymbol(currState[i][j])}
                     </div>
                 </div>`;
-        Log.array.push(currState[i]);
       }
 
       square.innerHTML = square_inner;
@@ -268,15 +274,12 @@ class View {
     document.querySelector("#resultLog").append(div);
   };
 
-  static winLose = (modelCnt) => {
+  static winLose = (model, flag) => {
     const parent = document.querySelector("#resultWinLose");
-
-    console.log("parent", parent);
-
     let container = document.createElement("div");
     container.classList.add("d-flex", "justify-content-around");
 
-    if (modelCnt === 0) {
+    if (model.clickCnt === 0) {
       const drawGame = `
         <div>
           <p>draw</p>
@@ -286,8 +289,8 @@ class View {
     } else {
       const player1 = `
         <div>
-            <p>Player1</p>
-            <p>${Controller.judge(!config.flag)}</p>
+            <p>${config.name}</p>
+            <p>${flag ? "Win":"Lose"}</p>
         </div>
       `;
 
@@ -296,10 +299,14 @@ class View {
     parent.append(container);
   };
 
-  static winLoseLog = (modelState, modelCnt) => {
-    for (let i = 0; i < Controller.logArray(modelState).length; i++) {
-      View.winLose(modelCnt);
-      View.logOutput();
+  static winLoseLog = (model) => {
+    document.querySelector("#resultWinLose").innerHTML = "";
+    document.querySelector("#resultLog").innerHTML="";
+    for (let i = 0; i < Log.array.length; i++) {
+      console.log("aasfffff");
+      View.winLose(model, Log.array_2[i]);
+      console.log("aaaa");
+      View.logOutput(Log.array[i]);
     }
   };
 }
@@ -347,14 +354,12 @@ class Controller {
     }
   };
 
-  static logArray = (data) => {
-    if (Log.array.length > 3) {
-      Log.array.splice(0);
-      Log.array.push(data);
-      return Log.array;
+  static queArray = (ary, data) => {
+    if (ary.length >= 3) {
+      ary.splice(0, 1);
+      ary.push(data);
     } else {
-      Log.array.push(data);
-      return Log.array;
+      ary.push(data);
     }
   };
 
@@ -369,6 +374,7 @@ class Controller {
 
 class Log {
   static array = [];
+  static array_2 = [];
 }
 
 Controller.startGame();
